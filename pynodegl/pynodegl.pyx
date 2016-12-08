@@ -1,5 +1,12 @@
 from libc.stdlib cimport calloc
 
+cdef extern from "stdarg.h":
+    ctypedef struct va_list:
+        pass
+
+cdef extern from "stdio.h":
+    int vsnprintf(char *str, size_t size, const char *format, va_list ap)
+
 cdef extern from "nodegl.h":
     cdef int NGL_LOG_VERBOSE
     cdef int NGL_LOG_DEBUG
@@ -7,6 +14,9 @@ cdef extern from "nodegl.h":
     cdef int NGL_LOG_WARNING
     cdef int NGL_LOG_ERROR
 
+    ctypedef void (*ngl_log_callback_type)(void *arg, int level, const char *filename,
+                                           int ln, const char *fn, const char *fmt, va_list vl)
+    void ngl_log_set_callback(void *arg, ngl_log_callback_type callback)
     void ngl_log_set_min_level(int level)
 
     cdef struct ngl_node
@@ -46,6 +56,20 @@ include "nodes_def.pyx"
 
 def log_set_min_level(int level):
     ngl_log_set_min_level(level)
+
+_callback_func = None
+
+cdef void _log_callback_wrapper(void *arg, int level, const char *filename,
+                                int ln, const char *fn, const char *fmt, va_list vl):
+    global _callback_func
+    cdef char[512] buf
+    vsnprintf(buf, 512, fmt, vl);
+    _callback_func(<object>arg, level, filename, ln, fn, buf)
+
+def log_set_callback(arg, f):
+    global _callback_func
+    _callback_func = f
+    ngl_log_set_callback(<void *>arg, _log_callback_wrapper)
 
 cdef class Viewer:
     cdef ngl_ctx *ctx

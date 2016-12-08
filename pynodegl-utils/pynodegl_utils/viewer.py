@@ -28,6 +28,7 @@ import examples
 import importlib
 import inspect
 import json
+import logging
 import pkgutil
 import platform
 import subprocess
@@ -539,6 +540,23 @@ class _MainWindow(QtGui.QSplitter):
         self._gl_widget = None
 
 def run():
+
+    logging.basicConfig(level=logging.DEBUG,
+                        format="%(asctime)s - [%(levelname)s] (%(ngl_filename)s:%(ngl_ln)d %(ngl_fn)s) %(message)s")
+
+    def log_cb(arg, level, filename, ln, fn, msg):
+        level_map = {
+            ngl.LOG_VERBOSE: logging.DEBUG,
+            ngl.LOG_DEBUG:   logging.DEBUG,
+            ngl.LOG_INFO:    logging.INFO,
+            ngl.LOG_WARNING: logging.WARNING,
+            ngl.LOG_ERROR:   logging.ERROR,
+        }
+        d = {'ngl_filename': filename, 'ngl_ln': ln, 'ngl_fn': fn}
+        logging.log(level_map[level], msg, extra=d)
+
+    ngl.log_set_callback(None, log_cb)
+
     app = QtGui.QApplication(sys.argv)
     window = _MainWindow(sys.argv[1:])
     window.show()
