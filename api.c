@@ -22,14 +22,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "glcontext.h"
 #include "log.h"
 #include "nodegl.h"
 #include "nodes.h"
-
-struct ngl_ctx {
-    struct glcontext *glcontext;
-};
 
 struct ngl_ctx *ngl_create(void)
 {
@@ -65,6 +60,19 @@ int ngl_draw(struct ngl_ctx *s, struct ngl_node *scene, double t)
     LOG(DEBUG, "draw scene %s @ t=%f", scene->name, t);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    if (s->scene != scene) {
+        if (s->scene) {
+            LOG(INFO, "scene change detected (%s → %s)", s->scene->name, scene->name);
+            ngli_node_detach_ctx(s->scene);
+            ngl_node_unrefp(&s->scene);
+        }
+        ngl_node_ref(scene);
+        int ret = ngli_node_attach_ctx(scene, s);
+        if (ret < 0)
+            return ret;
+        s->scene = scene;
+    }
+
     ngli_node_check_resources(scene, t);
     ngli_node_update(scene, t);
     ngli_node_draw(scene);
@@ -79,6 +87,10 @@ void ngl_free(struct ngl_ctx **ss)
     if (!s)
         return;
 
+    if (s->scene) {
+        ngli_node_detach_ctx(s->scene);
+        ngl_node_unrefp(&s->scene);
+    }
     ngli_glcontext_freep(&s->glcontext);
     free(*ss);
     *ss = NULL;
