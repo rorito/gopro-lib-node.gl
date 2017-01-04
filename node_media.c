@@ -59,15 +59,17 @@ static void callback_sxplayer_log(void *arg, int level, const char *filename, in
     if (level < 0 || level > NGLI_ARRAY_NB(log_levels))
         return;
 
-    struct media *s = arg;
+    struct ngl_node *node = arg;
+    struct media *s = node->priv_data;
     if (level < s->sxplayer_min_level)
         return;
 
     char buf[512];
     vsnprintf(buf, sizeof(buf), fmt, vl);
     if (buf[0])
-        ngli_log_print(log_levels[level].ngl_id, __FILE__, __LINE__, __FUNCTION__,
-                       "[SXPLAYER %s:%d %s] %s", filename, ln, fn, buf);
+        ngli_log(node->ctx->logger, log_levels[level].ngl_id,
+                 node->name, __FILE__, __LINE__, __FUNCTION__,
+                 "[SXPLAYER %s:%d %s] %s", filename, ln, fn, buf);
 }
 
 static int media_init(struct ngl_node *node)
@@ -80,7 +82,7 @@ static int media_init(struct ngl_node *node)
     if (!s->player)
         return -1;
 
-    sxplayer_set_log_callback(s->player, s, callback_sxplayer_log);
+    sxplayer_set_log_callback(s->player, node, callback_sxplayer_log);
 
     for (i = 0; i < NGLI_ARRAY_NB(log_levels); i++) {
         if (log_levels[i].str && !strcmp(log_levels[i].str, s->sxplayer_min_level_str)) {

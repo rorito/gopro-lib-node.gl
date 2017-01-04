@@ -35,23 +35,6 @@
 #include <stdarg.h>
 #include <stdint.h>
 
-/*
- * Logging
- */
-enum {
-    NGL_LOG_VERBOSE,
-    NGL_LOG_DEBUG,
-    NGL_LOG_INFO,
-    NGL_LOG_WARNING,
-    NGL_LOG_ERROR,
-};
-
-typedef void (*ngl_log_callback_type)(void *arg, int level, const char *filename,
-                                      int ln, const char *fn, const char *fmt, va_list vl);
-
-void ngl_log_set_callback(void *arg, ngl_log_callback_type callback);
-void ngl_log_set_min_level(int level);
-
 /* Nodes */
 struct ngl_node;
 
@@ -126,12 +109,26 @@ enum {
 
 /* Main context */
 struct ngl_ctx;
-
 struct ngl_ctx *ngl_create(void);
 int ngl_set_glcontext(struct ngl_ctx *s, void *display, void *window, void *handle, int platform, int api);
 int ngl_set_scene(struct ngl_ctx *s, struct ngl_node *scene);
 int ngl_draw(struct ngl_ctx *s, double t);
 int ngl_set_viewport(struct ngl_ctx *s, int x, int y, int w, int h);
 void ngl_free(struct ngl_ctx **ss);
+
+/* Logging */
+enum {
+    NGL_LOG_VERBOSE,
+    NGL_LOG_DEBUG,
+    NGL_LOG_INFO,
+    NGL_LOG_WARNING,
+    NGL_LOG_ERROR,
+};
+
+typedef void (*ngl_log_callback_type)(void *arg, int level, const char *module,
+                                      const char *filename, int ln, const char *fn,
+                                      const char *fmt, va_list vl);
+void ngl_set_log_callback(struct ngl_ctx *s, void *arg, ngl_log_callback_type callback);
+void ngl_set_log_min_level(struct ngl_ctx *s, int level);
 
 #endif

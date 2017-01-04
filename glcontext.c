@@ -52,7 +52,9 @@ static const struct glcontext_class *glcontext_class_map[] = {
 #endif
 };
 
-static struct glcontext *glcontext_new(void *display, void *window, void *handle, int platform, int api)
+#define _NLOG(log_level, ...) NGLI_LOG(s->logger, NGL_LOG_##log_level, __VA_ARGS__)
+
+static struct glcontext *glcontext_new(void *logger, void *display, void *window, void *handle, int platform, int api)
 {
     struct glcontext *glcontext = NULL;
 
@@ -71,6 +73,7 @@ static struct glcontext *glcontext_new(void *display, void *window, void *handle
         }
     }
 
+    glcontext->logger = logger;
     glcontext->platform = platform;
     glcontext->api = api;
 
@@ -86,11 +89,11 @@ fail:
     return NULL;
 }
 
-struct glcontext *ngli_glcontext_new_wrapped(void *display, void *window, void *handle, int platform, int api)
+struct glcontext *ngli_glcontext_new_wrapped(void *logger, void *display, void *window, void *handle, int platform, int api)
 {
     struct glcontext *glcontext;
 
-    glcontext = glcontext_new(display, window, handle, platform, api);
+    glcontext = glcontext_new(logger, display, window, handle, platform, api);
     if (!glcontext)
         return NULL;
 
@@ -110,7 +113,7 @@ struct glcontext *ngli_glcontext_new_shared(struct glcontext *other)
     void *window  = other->class->get_window(other);
     void *handle  = other->class->get_handle(other);
 
-    glcontext = glcontext_new(display, window, handle, other->platform, other->api);
+    glcontext = glcontext_new(other->logger, display, window, handle, other->platform, other->api);
 
     if (glcontext->class->create) {
         int ret = glcontext->class->create(glcontext, other);
@@ -150,7 +153,7 @@ int ngli_glcontext_load_extensions(struct glcontext *glcontext)
         glcontext->has_vao_compatibility = ngli_glcontext_check_extension("GL_OES_vertex_array_object", gl_extensions);
     }
 
-    LOG(INFO, "ES2_compatibility=%d vertex_array_object=%d", glcontext->has_es2_compatibility, glcontext->has_vao_compatibility);
+    //LOG(INFO, "ES2_compatibility=%d vertex_array_object=%d", glcontext->has_es2_compatibility, glcontext->has_vao_compatibility);
 
     glcontext->loaded = 1;
 

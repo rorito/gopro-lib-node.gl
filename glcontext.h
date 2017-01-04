@@ -29,6 +29,7 @@ struct glcontext_class;
 struct glcontext {
     /* GL context */
     const struct glcontext_class *class;
+    void *logger;
     int platform;
     int api;
     int wrapped;
@@ -59,7 +60,7 @@ struct glcontext_class {
     size_t priv_size;
 };
 
-struct glcontext *ngli_glcontext_new_wrapped(void *display, void *window, void *handle, int platform, int api);
+struct glcontext *ngli_glcontext_new_wrapped(void *logger, void *display, void *window, void *handle, int platform, int api);
 struct glcontext *ngli_glcontext_new_shared(struct glcontext *other);
 int ngli_glcontext_load_extensions(struct glcontext *glcontext);
 int ngli_glcontext_make_current(struct glcontext *glcontext, int current);

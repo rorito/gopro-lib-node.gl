@@ -23,6 +23,8 @@
 
 #include "log.h"
 
+#define _NLOG(lvl, ...) fprintf(stderr, __VA_ARGS__)
+
 GLenum ngli_check_gl_error(void)
 {
     static const char * const errors[] = {
@@ -38,9 +40,9 @@ GLenum ngli_check_gl_error(void)
         return error;
 
     if (error < NGLI_ARRAY_NB(errors))
-        LOG(ERROR, "detected gl error: %s", errors[error]);
+        _NLOG(ERROR, "detected gl error: %s", errors[error]);
     else
-        LOG(ERROR, "detected gl error: %d", error);
+        _NLOG(ERROR, "detected gl error: %d", error);
 
     return error;
 }

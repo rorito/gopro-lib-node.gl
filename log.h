@@ -25,9 +25,19 @@
 #include "nodegl.h"
 #include "utils.h"
 
-#define LOG(log_level, ...) ngli_log_print(NGL_LOG_##log_level, __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
+#define NGLI_LOG(logger, module, log_level, ...) ngli_log(logger, NGL_LOG_##log_level, \
+                                                          module, __FILE__, __LINE__,  \
+                                                          __FUNCTION__, __VA_ARGS__)
 
-void ngli_log_print(int log_level, const char *filename,
-                    int ln, const char *fn, const char *fmt, ...) ngli_printf_format(5, 6);
+struct log_ctx *ngli_log_create(void);
+
+void ngli_log_set_callback(struct log_ctx *log, void *arg,
+                           ngl_log_callback_type callback);
+
+void ngli_log_set_min_level(struct log_ctx *log, int level);
+
+void ngli_log(struct log_ctx *log, int log_level,
+              const char *module, const char *filename,
+              int ln, const char *fn, const char *fmt, ...) ngli_printf_format(7, 8);
 
 #endif /* LOG_H */

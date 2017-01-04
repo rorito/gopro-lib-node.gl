@@ -106,7 +106,8 @@ static int allowed_node(const struct ngl_node *node, const int *allowed_ids)
     return 0;
 }
 
-int ngli_params_set(uint8_t *base_ptr, const struct node_param *par, va_list *ap)
+int ngli_params_set(void *logger, uint8_t *base_ptr,
+                    const struct node_param *par, va_list *ap)
 {
     uint8_t *dstp = base_ptr + par->offset;
 
@@ -231,7 +232,8 @@ int ngli_params_set_defaults(uint8_t *base_ptr, const struct node_param *params)
     return 0;
 }
 
-int ngli_params_add(uint8_t *base_ptr, const struct node_param *par,
+int ngli_params_add(void *logger, uint8_t *base_ptr,
+                    const struct node_param *par,
                     int nb_elems, void *elems)
 {
     switch (par->type) {

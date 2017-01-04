@@ -19,13 +19,10 @@
  * under the License.
  */
 
-#include <pthread.h>
 #include <stdarg.h>
 #include <stdio.h>
 
 #include "log.h"
-
-static pthread_once_t log_initialized = PTHREAD_ONCE_INIT;
 
 struct log_ctx {
     void *user_arg;
@@ -33,10 +30,9 @@ struct log_ctx {
     int min_level;
 };
 
-static struct log_ctx log_ctx;
-
-static void default_callback(void *arg, int level, const char *filename, int ln,
-                             const char *fn, const char *fmt, va_list vl)
+static void default_callback(void *arg, int level, const char *module,
+                             const char *filename, int ln, const char *fn,
+                             const char *fmt, va_list vl)
 {
     char logline[512];
     static const char * const log_strs[] = {
@@ -47,45 +43,43 @@ static void default_callback(void *arg, int level, const char *filename, int ln,
         [NGL_LOG_ERROR]   = "ERROR",
     };
     vsnprintf(logline, sizeof(logline), fmt, vl);
-    printf("[%s] %s:%d %s: %s\n", log_strs[level], filename, ln, fn, logline);
+    printf("[%s] %s @ %s:%d %s: %s\n", log_strs[level],
+           module, filename, ln, fn, logline);
 }
 
-static void log_init(void)
+struct log_ctx *ngli_log_create(void)
 {
-    log_ctx.callback  = default_callback;
-    log_ctx.min_level = NGL_LOG_INFO;
+    struct log_ctx *log = calloc(1, sizeof(*log));
+    if (!log)
+        return NULL;
+    log->callback  = default_callback;
+    log->min_level = NGL_LOG_INFO;
+    return log;
 }
 
-void ngl_log_set_callback(void *arg, ngl_log_callback_type callback)
+void ngli_log_set_callback(struct log_ctx *log, void *arg,
+                           ngl_log_callback_type callback)
 {
-    int ret = pthread_once(&log_initialized, log_init);
-    if (ret < 0)
-        return;
-    log_ctx.user_arg = arg;
-    log_ctx.callback = callback;
+    log->user_arg = arg;
+    log->callback = callback;
 }
 
-void ngl_log_set_min_level(int level)
+void ngli_log_set_min_level(struct log_ctx *log, int level)
 {
-    int ret = pthread_once(&log_initialized, log_init);
-    if (ret < 0)
-        return;
-    log_ctx.min_level = level;
+    log->min_level = level;
 }
 
-void ngli_log_print(int log_level, const char *filename,
-                    int ln, const char *fn, const char *fmt, ...)
+void ngli_log(struct log_ctx *log, int log_level,
+              const char *module, const char *filename,
+              int ln, const char *fn, const char *fmt, ...)
 {
     va_list arg_list;
 
-    int ret = pthread_once(&log_initialized, log_init);
-    if (ret < 0)
-        return;
-
-    if (log_level < log_ctx.min_level)
+    if (log_level < log->min_level)
         return;
 
     va_start(arg_list, fmt);
-    log_ctx.callback(log_ctx.user_arg, log_level, filename, ln, fn, fmt, arg_list);
+    log->callback(log->user_arg, log_level, module,
+                  filename, ln, fn, fmt, arg_list);
     va_end(arg_list);
 }

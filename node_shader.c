@@ -103,7 +103,8 @@ static void get_##func##_info_log(GLuint id, char **info_logp, int *info_log_len
 DEFINE_GET_INFO_LOG_FUNCTION(shader, Shader)
 DEFINE_GET_INFO_LOG_FUNCTION(program, Program)
 
-static GLuint load_shader(const char *vertex_shader_data, const char *fragment_shader_data)
+static GLuint load_shader(struct ngl_node *node,
+                          const char *vertex_shader_data, const char *fragment_shader_data)
 {
     char *info_log = NULL;
     int info_log_length = 0;
@@ -178,7 +179,7 @@ static int shader_init(struct ngl_node *node)
     if (!fragment_data)
         return -1;
 
-    s->program_id = load_shader(s->vertex_data, fragment_data);
+    s->program_id = load_shader(node, s->vertex_data, fragment_data);
     free(fragment_data);
 
     if (!s->program_id)

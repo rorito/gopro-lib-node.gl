@@ -29,6 +29,8 @@
 #include "glcontext.h"
 #include "params.h"
 
+#define LOG(...) NGLI_LOG(node->ctx->logger, node->name, __VA_ARGS__)
+
 struct node_class;
 
 enum {
@@ -41,6 +43,7 @@ enum {
 struct ngl_ctx {
     struct glcontext *glcontext;
     struct ngl_node *scene;
+    struct log_ctx *logger;
 };
 
 struct ngl_node {

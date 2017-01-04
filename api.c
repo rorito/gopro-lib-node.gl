@@ -26,20 +26,28 @@
 #include "nodegl.h"
 #include "nodes.h"
 
+#define _NLOG(...) NGLI_LOG(s->logger, "node.gl", __VA_ARGS__)
+
 struct ngl_ctx *ngl_create(void)
 {
     struct ngl_ctx *s = calloc(1, sizeof(*s));
     if (!s)
         return NULL;
 
-    LOG(INFO, "Context create in node.gl v%d.%d.%d",
-        NODEGL_VERSION_MAJOR, NODEGL_VERSION_MINOR, NODEGL_VERSION_MICRO);
+    s->logger = ngli_log_create();
+    if (!s->logger) {
+        free(s);
+        return NULL;
+    }
+
+    _NLOG(INFO, "Context create in node.gl v%d.%d.%d",
+          NODEGL_VERSION_MAJOR, NODEGL_VERSION_MINOR, NODEGL_VERSION_MICRO);
     return s;
 }
 
 int ngl_set_glcontext(struct ngl_ctx *s, void *display, void *window, void *handle, int platform, int api)
 {
-    s->glcontext = ngli_glcontext_new_wrapped(display, window, handle, platform, api);
+    s->glcontext = ngli_glcontext_new_wrapped(s->logger, display, window, handle, platform, api);
     if (!s->glcontext)
         return -1;
 
@@ -48,9 +56,19 @@ int ngl_set_glcontext(struct ngl_ctx *s, void *display, void *window, void *hand
     return 0;
 }
 
+void ngl_set_log_callback(struct ngl_ctx *s, void *arg, ngl_log_callback_type callback)
+{
+    ngli_log_set_callback(s->logger, arg, callback);
+}
+
+void ngl_set_log_min_level(struct ngl_ctx *s, int level)
+{
+    ngli_log_set_min_level(s->logger, level);
+}
+
 int ngl_set_viewport(struct ngl_ctx *s, int x, int y, int w, int h)
 {
-    LOG(DEBUG, "update viewport to %d,%d %dx%d", x, y, w, h);
+    _NLOG(DEBUG, "update viewport to %d,%d %dx%d", x, y, w, h);
     glViewport(x, y, w, h);
     return 0;
 }
@@ -76,11 +94,11 @@ int ngl_draw(struct ngl_ctx *s, double t)
     struct ngl_node *scene = s->scene;
 
     if (!scene) {
-        LOG(ERROR, "scene is not set, can not draw");
+        _NLOG(ERROR, "scene is not set, can not draw");
         return -1;
     }
 
-    LOG(DEBUG, "draw scene %s @ t=%f", scene->name, t);
+    _NLOG(DEBUG, "draw scene %s @ t=%f", scene->name, t);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     ngli_node_check_resources(scene, t);

@@ -68,7 +68,7 @@ float ngli_vec3_dot(float *v1, float *v2)
 void ngli_mat3_print(const float *m)
 {
     for (int i = 0; i < 9; i += 3)
-        LOG(INFO, "%g %g %g", m[i + 0], m[i + 1], m[i + 2]);
+        printf("%g %g %g", m[i + 0], m[i + 1], m[i + 2]);
 }
 
 void ngli_mat3_from_mat4(float *dst, const float *m)
@@ -152,7 +152,7 @@ void ngli_mat3_inverse(float *dst, const float *m)
 void ngli_mat4_print(const float *m)
 {
     for (int i = 0; i < 16; i += 4) {
-        LOG(INFO, "%g %g %g %g", m[i + 0], m[i + 1], m[i + 2], m[i + 3]);
+        printf("%g %g %g %g\n", m[i + 0], m[i + 1], m[i + 2], m[i + 3]);
     }
 }
 

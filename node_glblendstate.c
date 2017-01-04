@@ -39,7 +39,8 @@ static const struct node_param glblendstate_params[] = {
     {NULL}
 };
 
-static char *get_blend_str(GLenum parameter, const char *comp, const int rgb)
+static char *get_blend_str(const struct ngl_node *node,
+                           GLenum parameter, const char *comp, const int rgb)
 {
     const char *comp_str = rgb ? "" : "A";
     switch (parameter) {
@@ -64,14 +65,15 @@ static char *get_blend_str(GLenum parameter, const char *comp, const int rgb)
     }
 }
 
-static char *get_func_str(GLenum mode, GLenum src, GLenum dst, const int rgb)
+static char *get_func_str(const struct ngl_node *node, GLenum mode,
+                          GLenum src, GLenum dst, const int rgb)
 {
     const char op = mode == GL_FUNC_ADD ? '+' : '-';
     const char *lcomp = rgb ? "src" : "srcA";
     const char *rcomp = rgb ? "dst" : "dstA";
 
-    char *lblend = get_blend_str(src, lcomp, rgb);
-    char *rblend = get_blend_str(dst, rcomp, rgb);
+    char *lblend = get_blend_str(node, src, lcomp, rgb);
+    char *rblend = get_blend_str(node, dst, rcomp, rgb);
 
     if (mode == GL_FUNC_REVERSE_SUBTRACT) {
         NGLI_SWAP(const char *, lcomp,  rcomp);
@@ -101,8 +103,8 @@ static char *glblendstate_info_str(const struct ngl_node *node)
     char *info_str;
     const struct glstate *s = node->priv_data;
     if (s->enabled[0]) {
-        char *rgb_blend   = get_func_str(s->mode_rgb[0],   s->src_rgb[0],   s->dst_rgb[0],   1);
-        char *alpha_blend = get_func_str(s->mode_alpha[0], s->src_alpha[0], s->dst_alpha[0], 0);
+        char *rgb_blend   = get_func_str(node, s->mode_rgb[0],   s->src_rgb[0],   s->dst_rgb[0],   1);
+        char *alpha_blend = get_func_str(node, s->mode_alpha[0], s->src_alpha[0], s->dst_alpha[0], 0);
         info_str = ngli_asprintf("BLEND dst=%s  dstA=%s", rgb_blend, alpha_blend);
         free(rgb_blend);
         free(alpha_blend);
