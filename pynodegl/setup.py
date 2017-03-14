@@ -62,6 +62,23 @@ class BuildExtCommand(build_ext):
             %(cvecname)s[%(vecname)s_i] = %(vecname)s[%(vecname)s_i]
 ''' % {'n': n, 'vecname': vecname, 'cvecname': cvecname}
 
+        def _get_list_init_code(name, clistlen, clistname, citem, ctype):
+            return '''
+        if not hasattr(%(name)s, '__iter__'):
+            %(name)s = [%(name)s]
+        cdef int %(clistlen)s = len(%(name)s)
+        cdef %(ctype)s*%(clistname)s = <%(ctype)s*>calloc(%(clistlen)s, sizeof(%(ctype)s))
+        if %(clistname)s is NULL:
+            raise MemoryError()
+        for i, item in enumerate(%(name)s):
+            %(clistname)s[i] = %(citem)s
+''' % {'name': name, 'clistlen': clistlen, 'clistname': clistname, 'citem': citem, 'ctype': ctype}
+
+        def _get_list_uninit_code(clistname):
+            return '''
+        free(%(clistname)s)
+''' % {'clistname': clistname}
+
         content = 'from libc.stdlib cimport free\n'
         content += 'from libc.stdint cimport uintptr_t\n'
         content += 'cdef extern from "nodegl.h":\n'
@@ -91,7 +108,6 @@ class BuildExtCommand(build_ext):
 
             for field in fields.get('constructors', []):
                 field_name, field_type = field
-                assert not field_type.endswith('List')
                 if field_type in ('int', 'float', 'double'):
                     construct_cargs.append(field_name)
                     construct_args.append('%s %s' % (field_type, field_name))
@@ -104,6 +120,21 @@ class BuildExtCommand(build_ext):
                     special_inits += _get_vec_init_code(n, field_name, cparam)
                     construct_cargs.append(cparam)
                     construct_args.append(field_name)
+                elif field_type.endswith('List'):
+                    clistname = field_name + '_c'
+                    clistlen = 'nb_' + clistname
+                    if field_type.startswith('Node'):
+                        citem = '(<_Node>item).ctx'
+                        ctype = 'ngl_node *'
+                    elif field_type.startswith('double'):
+                        citem = 'item'
+                        ctype = 'double'
+                    else:
+                        assert False
+                    special_inits += _get_list_init_code(field_name, clistlen, clistname, citem, ctype)
+                    construct_cargs.extend([clistlen, clistname])
+                    construct_args.append(field_name)
+                    extra_args += _get_list_uninit_code(clistname)
                 else:
                     construct_cargs.append('%s.ctx' % field_name)
                     construct_args.append('_Node %s' % field_name)

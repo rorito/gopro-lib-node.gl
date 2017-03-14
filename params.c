@@ -190,7 +190,19 @@ int ngli_params_set_constructors(uint8_t *base_ptr, const struct node_param *par
         const struct node_param *par = &params[i];
 
         if (par->flags & PARAM_FLAG_CONSTRUCTOR) {
-            int ret = ngli_params_set(base_ptr, par, ap);
+            int ret;
+            switch (par->type) {
+                case PARAM_TYPE_NODELIST:
+                case PARAM_TYPE_DBLLIST: {
+                    int nb_elems = va_arg(*ap, int);
+                    void *elems = va_arg(*ap, void *);
+                    ret = ngli_params_add(base_ptr, par, nb_elems, elems);
+                    break;
+                }
+                default:
+                    ret = ngli_params_set(base_ptr, par, ap);
+                    break;
+            }
             if (ret < 0)
                 return ret;
         } else {
