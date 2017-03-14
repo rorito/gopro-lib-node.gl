@@ -81,7 +81,7 @@
 
 - TexturedShape:
     constructors:
-        - [shape, Node]
+        - [shapes, NodeList]
         - [shader, Node]
     optional:
         - [textures, NodeList]

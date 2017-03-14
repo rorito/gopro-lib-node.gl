@@ -46,7 +46,7 @@
 
 #define OFFSET(x) offsetof(struct texturedshape, x)
 static const struct node_param texturedshape_params[] = {
-    {"shape",    PARAM_TYPE_NODE, OFFSET(shape), .flags=PARAM_FLAG_CONSTRUCTOR,
+    {"shapes",   PARAM_TYPE_NODELIST, OFFSET(shapes), .flags=PARAM_FLAG_CONSTRUCTOR,
                  .node_types=(const int[]){NGL_NODE_QUAD, NGL_NODE_TRIANGLE, NGL_NODE_SHAPE, -1}},
     {"shader",   PARAM_TYPE_NODE, OFFSET(shader), .flags=PARAM_FLAG_CONSTRUCTOR,
                  .node_types=(const int[]){NGL_NODE_SHADER, -1}},
@@ -148,7 +148,7 @@ static int update_uniforms(struct ngl_node *node)
 static int update_vertex_attribs(struct ngl_node *node)
 {
     struct texturedshape *s = node->priv_data;
-    struct shape *shape = s->shape->priv_data;
+    struct shape *shape = s->shapes[0]->priv_data;
     struct shader *shader = s->shader->priv_data;
 
     for (int i = 0; i < s->nb_textures; i++)  {
@@ -183,9 +183,11 @@ static int texturedshape_init(struct ngl_node *node)
     struct texturedshape *s = node->priv_data;
     struct shader *shader = s->shader->priv_data;
 
-    ret = ngli_node_init(s->shape);
-    if (ret < 0)
-        return ret;
+    for (int i = 0; i < s->nb_shapes; i++) {
+        ret = ngli_node_init(s->shapes[i]);
+        if (ret < 0)
+            return ret;
+    }
 
     ret = ngli_node_init(s->shader);
     if (ret < 0)
@@ -282,7 +284,9 @@ static void texturedshape_update(struct ngl_node *node, double t)
 {
     struct texturedshape *s = node->priv_data;
 
-    ngli_node_update(s->shape, t);
+    for (int i = 0; i < s->nb_shapes; i++) {
+        ngli_node_update(s->shapes[i], t);
+    }
 
     for (int i = 0; i < s->nb_textures; i++) {
         if (s->textures[i]) {
@@ -303,7 +307,7 @@ static void texturedshape_draw(struct ngl_node *node)
     struct glcontext *glcontext = ctx->glcontext;
     struct texturedshape *s = node->priv_data;
     const struct shader *shader = s->shader->priv_data;
-    const struct shape *shape = s->shape->priv_data;
+    const struct shape *shape = s->shapes[0]->priv_data;
 
     glUseProgram(shader->program_id);
 
