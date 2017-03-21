@@ -35,6 +35,7 @@
 extern const struct node_class ngli_attributevec2_class;
 extern const struct node_class ngli_attributevec3_class;
 extern const struct node_class ngli_attributevec4_class;
+extern const struct node_class ngli_box_class;
 extern const struct node_class ngli_camera_class;
 extern const struct node_class ngli_texture_class;
 extern const struct node_class ngli_glstate_class;
@@ -104,6 +105,7 @@ static const struct node_class *node_class_map[] = {
     [NGL_NODE_UNIFORMMAT4]           = &ngli_uniformmat4_class,
     [NGL_NODE_UNIFORMSAMPLER]        = &ngli_uniformsampler_class,
     [NGL_NODE_FPS]                   = &ngli_fps_class,
+    [NGL_NODE_BOX]                   = &ngli_box_class,
 };
 
 static const char *param_type_strings[] = {

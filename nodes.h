@@ -170,6 +170,16 @@ struct shape {
     float quad_uv_width[2];
     float quad_uv_height[2];
 
+    /* box params */
+    float box_corner[3];
+    float box_width[3];
+    float box_height[3];
+    float box_depth[3];
+
+    float box_uv_corner[2];
+    float box_uv_width[2];
+    float box_uv_height[2];
+
     /* triangle params */
     float triangle_edges[9];
 
