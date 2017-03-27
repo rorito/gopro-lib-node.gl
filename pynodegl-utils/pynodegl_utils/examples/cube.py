@@ -3,7 +3,7 @@ from OpenGL import GL
 from pynodegl import TexturedShape, Quad, Texture, Media, Shader, Group
 from pynodegl import Rotate, AnimKeyFrameScalar, Camera
 from pynodegl import UniformVec3, UniformSampler, RTT, GLState
-from pynodegl import AttributeVec2
+from pynodegl import AttributeVec2, Box
 
 from pynodegl_utils.misc import scene
 
@@ -40,9 +40,11 @@ void main(void)
     s = Shader(fragment_data=frag_data)
 
     t = Texture(data_src=Media(cfg.medias[0].filename))
-    cube_quads_info = _get_cube_quads()
-    children = [_get_cube_side(t, s, qi[0], qi[1], qi[2], qi[3]) for qi in _get_cube_quads()]
-    cube.add_children(*children)
+    box = Box((-0.5, -0.5, 0.5), (1, 0, 0), (0, 1, 0), (0, 0, 1))
+    tshape = TexturedShape(box, s, t)
+    tshape.add_glstates(GLState(GL.GL_DEPTH_TEST, GL.GL_TRUE))
+    tshape.add_glstates(GLState(GL.GL_CULL_FACE, GL.GL_FALSE))
+    cube.add_children(tshape)
 
     rot = Rotate(cube, axis=(1,0,0), name="rotx")
     rot.add_animkf(AnimKeyFrameScalar(0,  0),
@@ -58,8 +60,9 @@ void main(void)
 
     camera = Camera(rot)
     camera.set_eye(0.0, 0.0, 2.0)
+    #camera.set_center(1.0, 1.0, 1.0)
     camera.set_up(0.0, 1.0, 0.0)
-    camera.set_perspective(45.0, cfg.aspect_ratio, 1.0, 10.0)
+    camera.set_perspective(45.0, cfg.aspect_ratio, 0.1, 10.0)
 
     return camera
 

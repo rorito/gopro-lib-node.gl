@@ -47,7 +47,7 @@
 #define OFFSET(x) offsetof(struct texturedshape, x)
 static const struct node_param texturedshape_params[] = {
     {"shape",    PARAM_TYPE_NODE, OFFSET(shape), .flags=PARAM_FLAG_CONSTRUCTOR,
-                 .node_types=(const int[]){NGL_NODE_QUAD, NGL_NODE_TRIANGLE, NGL_NODE_SHAPE, -1}},
+                 .node_types=(const int[]){NGL_NODE_QUAD, NGL_NODE_TRIANGLE, NGL_NODE_SHAPE, NGL_NODE_BOX, -1}},
     {"shader",   PARAM_TYPE_NODE, OFFSET(shader), .flags=PARAM_FLAG_CONSTRUCTOR,
                  .node_types=(const int[]){NGL_NODE_SHADER, -1}},
     {"textures", PARAM_TYPE_NODELIST, OFFSET(textures),

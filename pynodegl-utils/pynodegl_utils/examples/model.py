@@ -151,6 +151,7 @@ def centered_model_media(cfg, n=0.5, model=None):
     for i, vertex in enumerate(vertices):
         uv = uvs[i]
         normal = normals[i]
+        print vertex[0], vertex[1], vertex[2]
         primitives.append(ShapePrimitive((
             vertex[0], vertex[1], vertex[2]),
             (uv[0], uv[1]),
