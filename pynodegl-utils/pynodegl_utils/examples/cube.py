@@ -1,9 +1,10 @@
 from OpenGL import GL
 
 from pynodegl import TexturedShape, Quad, Texture, Media, Shader, Group
-from pynodegl import Rotate, AnimKeyFrameScalar, Camera
+from pynodegl import Scale, Rotate, AnimKeyFrameScalar, Camera
 from pynodegl import UniformVec3, UniformSampler, RTT, GLState
 from pynodegl import AttributeVec2
+from pynodegl import GLColorState, GLStencilState
 
 from pynodegl_utils.misc import scene
 
@@ -55,6 +56,85 @@ void main(void)
     rot = Rotate(rot, axis=(0,0,1), name="rotz")
     rot.add_animkf(AnimKeyFrameScalar(0,  0),
                    AnimKeyFrameScalar(cfg.duration, 360*3))
+
+    camera = Camera(rot)
+    camera.set_eye(0.0, 0.0, 2.0)
+    camera.set_up(0.0, 1.0, 0.0)
+    camera.set_perspective(45.0, cfg.aspect_ratio, 1.0, 10.0)
+
+    return camera
+
+@scene()
+def outlined_rotating_cube(cfg):
+    cfg.glstates = [
+        GLState(GL.GL_STENCIL_TEST, GL.GL_TRUE),
+    ]
+
+    g = Group()
+
+    cube = Group(name="cube")
+    cube.add_glstates(GLState(GL.GL_DEPTH_TEST, GL.GL_TRUE),
+                      GLColorState(GL.GL_TRUE, 1, 1, 1, 1),
+                      GLStencilState(GL.GL_TRUE, 0xFF, GL.GL_ALWAYS, 1, 0xFF, GL.GL_KEEP, GL.GL_KEEP, GL.GL_REPLACE))
+
+    frag_data = """
+#version 100
+precision mediump float;
+uniform sampler2D tex0_sampler;
+varying vec2 var_tex0_coords;
+uniform vec3 blend_color;
+void main(void)
+{
+    vec4 t = texture2D(tex0_sampler, var_tex0_coords);
+    gl_FragColor = vec4(mix(t.rgb, blend_color, 0.2), 1.0);
+}"""
+    s = Shader(fragment_data=frag_data)
+
+    t = Texture(data_src=Media(cfg.medias[0].filename))
+    cube_quads_info = _get_cube_quads()
+    children = [_get_cube_side(t, s, qi[0], qi[1], qi[2], qi[3]) for qi in _get_cube_quads()]
+    cube.add_children(*children)
+
+    g.add_children(cube)
+
+    cube = Group(name="cube")
+    cube.add_glstates(GLState(GL.GL_DEPTH_TEST, GL.GL_FALSE),
+                      GLColorState(GL.GL_TRUE, 1, 1, 1, 1),
+                      GLStencilState(GL.GL_TRUE, 0x00, GL.GL_NOTEQUAL, 1, 0xFF, GL.GL_KEEP, GL.GL_KEEP, GL.GL_REPLACE))
+
+    frag_data = """
+#version 100
+precision mediump float;
+uniform sampler2D tex0_sampler;
+varying vec2 var_tex0_coords;
+uniform vec3 blend_color;
+void main(void)
+{
+    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+}"""
+    s = Shader(fragment_data=frag_data)
+
+    t = Texture(data_src=Media(cfg.medias[0].filename))
+    cube_quads_info = _get_cube_quads()
+    children = [_get_cube_side(t, s, qi[0], qi[1], qi[2], qi[3]) for qi in _get_cube_quads()]
+    cube.add_children(*children)
+
+    scale = Scale(cube, (1.05, 1.05, 1.05))
+
+    g.add_children(scale)
+
+    rot = Rotate(g, axis=(1,0,0), name="rotx")
+    rot.add_animkf(AnimKeyFrameScalar(0,  0),
+                   AnimKeyFrameScalar(cfg.duration, 360))
+
+    rot = Rotate(rot, axis=(0,1,0), name="roty")
+    rot.add_animkf(AnimKeyFrameScalar(0,  0),
+                   AnimKeyFrameScalar(cfg.duration, 360*2))
+
+    rot = Rotate(rot, axis=(0,0,1), name="rotz")
+    rot.add_animkf(AnimKeyFrameScalar(0,  0),
+                   AnimKeyFrameScalar(cfg.duration, 360*3))
+
 
     camera = Camera(rot)
     camera.set_eye(0.0, 0.0, 2.0)
