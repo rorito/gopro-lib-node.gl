@@ -1,7 +1,10 @@
+import random
+
 from pynodegl import Quad, Texture, Shader, TexturedShape, Media, Camera, Group, GLState
 from pynodegl import Scale, Rotate, Translate, Identity
 from pynodegl import UniformSampler, UniformVec4, UniformMat4, AttributeVec2
 from pynodegl import AnimKeyFrameScalar, AnimKeyFrameVec3
+from pynodegl import ShapePrimitive, Shape
 
 from pynodegl_utils.misc import scene
 
@@ -173,3 +176,50 @@ def animated_camera(cfg, rotate=False):
             AnimKeyFrameScalar(cfg.duration, 45.0))
 
     return camera
+
+@scene({'name': 'ax', 'type': 'range', 'range': [-1, 0], 'unit_base': 100},
+       {'name': 'ay', 'type': 'range', 'range': [ 0, 1], 'unit_base': 100},
+       {'name': 'bx', 'type': 'range', 'range': [ 0, 1], 'unit_base': 100},
+       {'name': 'by', 'type': 'range', 'range': [ 0, 1], 'unit_base': 100},
+       {'name': 'cx', 'type': 'range', 'range': [ 0, 1], 'unit_base': 100},
+       {'name': 'cy', 'type': 'range', 'range': [-1, 0], 'unit_base': 100},
+       {'name': 'dx', 'type': 'range', 'range': [-1, 0], 'unit_base': 100},
+       {'name': 'dy', 'type': 'range', 'range': [-1, 0], 'unit_base': 100})
+def morphing(cfg,
+             ax=random.uniform(-1,-.5), ay=random.uniform(.5,  1),
+             bx=random.uniform(.5,  1), by=random.uniform(.5,  1),
+             cx=random.uniform(.5,  1), cy=random.uniform(-1,-.5),
+             dx=random.uniform(-1,-.5), dy=random.uniform(-1,-.5)):
+
+    cfg.duration = cfg.medias[0].duration
+
+    sps = (
+            ShapePrimitive((ax, ay, 0), (0, 0)),
+            ShapePrimitive((bx, by, 0), (1, 0)),
+            ShapePrimitive((cx, cy, 0), (1, 1)),
+            ShapePrimitive((dx, dy, 0), (0, 1)),
+    )
+
+    translate_vecs = (
+            (random.uniform(-1,-.5) - ax, random.uniform(.5,  1) - ay),
+            (random.uniform(.5,  1) - bx, random.uniform(.5,  1) - by),
+            (random.uniform(.5,  1) - cx, random.uniform(-1,-.5) - cy),
+            (random.uniform(-1,-.5) - dx, random.uniform(-1,-.5) - dy),
+    )
+
+    for sp, tvec in zip(sps, translate_vecs):
+        nx, ny = tvec
+        trfm = Translate(Identity())
+        trfm.add_animkf(AnimKeyFrameVec3(0,            (0.0, 0.0, 0.0)),
+                        AnimKeyFrameVec3(cfg.duration, (nx,  ny, 0.0)))
+        sp.set_transform(trfm)
+
+    q = Shape(sps)
+    q.set_draw_mode(GL.GL_TRIANGLE_FAN)
+
+    m = Media(cfg.medias[0].filename)
+    t = Texture(data_src=m)
+    s = Shader()
+    tshape = TexturedShape(q, s, t)
+
+    return tshape

@@ -33,12 +33,39 @@ static const struct node_param shapeprimitive_params[] = {
     {"coordinates",         PARAM_TYPE_VEC3, OFFSET(coordinates), .flags=PARAM_FLAG_CONSTRUCTOR},
     {"texture_coordinates", PARAM_TYPE_VEC2, OFFSET(texture_coordinates), .flags=PARAM_FLAG_CONSTRUCTOR},
     {"normals",             PARAM_TYPE_VEC3, OFFSET(normals)},
+    {"animkf_x",            PARAM_TYPE_NODELIST, OFFSET(coords[0].animkf), .flags=PARAM_FLAG_DOT_DISPLAY_PACKED,
+                            .node_types=(const int[]){NGL_NODE_ANIMKEYFRAMESCALAR, -1}},
+    {"animkf_y",            PARAM_TYPE_NODELIST, OFFSET(coords[1].animkf), .flags=PARAM_FLAG_DOT_DISPLAY_PACKED,
+                            .node_types=(const int[]){NGL_NODE_ANIMKEYFRAMESCALAR, -1}},
+    {"animkf_z",            PARAM_TYPE_NODELIST, OFFSET(coords[2].animkf), .flags=PARAM_FLAG_DOT_DISPLAY_PACKED,
+                            .node_types=(const int[]){NGL_NODE_ANIMKEYFRAMESCALAR, -1}},
     {NULL}
 };
+
+static int shapeprimitive_init(struct ngl_node *node)
+{
+    struct shapeprimitive *s = node->priv_data;
+    for (int i = 0; i < 3; i++)
+        s->dynamic_coords |= !!s->coords[i].nb_animkf;
+    return 0;
+}
+
+static void shapeprimitive_update(struct ngl_node *node, double t)
+{
+    struct shapeprimitive *s = node->priv_data;
+    for (int i = 0; i < 3; i++)
+        if (s->coords[i].nb_animkf)
+            ngli_animkf_interpolate(&s->coords[i].offset,
+                                    s->coords[i].animkf,
+                                    s->coords[i].nb_animkf,
+                                    &s->coords[i].current_kf, t);
+}
 
 const struct node_class ngli_shapeprimitive_class = {
     .id        = NGL_NODE_SHAPEPRIMITIVE,
     .name      = "ShapePrimitive",
+    .init      = shapeprimitive_init,
+    .update    = shapeprimitive_update,
     .priv_size = sizeof(struct shapeprimitive),
     .params    = shapeprimitive_params,
 };

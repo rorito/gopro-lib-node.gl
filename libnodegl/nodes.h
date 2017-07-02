@@ -141,6 +141,13 @@ struct shapeprimitive {
     float coordinates[3];
     float texture_coordinates[2];
     float normals[3];
+    struct {
+        struct ngl_node **animkf;
+        int nb_animkf;
+        int current_kf;
+        float offset;
+    } coords[3];
+    int dynamic_coords;
 };
 
 #define NGLI_SHAPE_VERTICES_STRIDE(s) (8 * sizeof(*(s)->vertices))
@@ -216,6 +223,8 @@ struct shape {
 
     GLenum draw_mode;
     GLenum draw_type;
+
+    int dynamic_primitives;
 };
 
 struct uniform {

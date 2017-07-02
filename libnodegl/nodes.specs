@@ -136,6 +136,9 @@
         - [texture_coordinates, vec2]
     optional:
         - [normals, vec3]
+        - [animkf_x, NodeList]
+        - [animkf_y, NodeList]
+        - [animkf_z, NodeList]
 
 - Shape:
     optional:

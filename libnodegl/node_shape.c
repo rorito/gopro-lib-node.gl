@@ -52,6 +52,11 @@ static int shape_init(struct ngl_node *node)
     GLfloat *p = s->vertices;
     for (int i = 0; i < s->nb_vertices; i++) {
         const struct shapeprimitive *primitive = s->primitives[i]->priv_data;
+        int ret = ngli_node_init(s->primitives[i]);
+        if (ret < 0)
+            return 0;
+
+        s->dynamic_primitives |= primitive->dynamic_coords;
 
         memcpy(p, primitive->coordinates, sizeof(primitive->coordinates));
         p += NGLI_ARRAY_NB(primitive->coordinates);
@@ -77,6 +82,37 @@ static int shape_init(struct ngl_node *node)
     return 0;
 }
 
+static void shape_update(struct ngl_node *node, double t)
+{
+    struct shape *s = node->priv_data;
+
+    if (!s->dynamic_primitives)
+        return;
+
+    GLfloat *p = s->vertices;
+    for (int i = 0; i < s->nb_vertices; i++) {
+        struct ngl_node *pnode = s->primitives[i];
+        struct shapeprimitive *primitive = pnode->priv_data;
+
+        if (primitive->dynamic_coords) {
+            ngli_node_update(pnode, t);
+            p[0] = primitive->coordinates[0] + primitive->coords[0].offset;
+            p[1] = primitive->coordinates[1] + primitive->coords[1].offset;
+            p[2] = primitive->coordinates[2] + primitive->coords[2].offset;
+        }
+        p += NGLI_SHAPE_VERTICES_STRIDE(s) / sizeof(*p);
+    }
+
+    struct ngl_ctx *ctx = node->ctx;
+    struct glcontext *glcontext = ctx->glcontext;
+    const struct glfunctions *gl = &glcontext->funcs;
+    const size_t vertices_size = NGLI_SHAPE_VERTICES_SIZE(s);
+    ngli_glBindBuffer(gl, GL_ARRAY_BUFFER, s->vertices_buffer_id);
+    // XXX: glBufferSubData?
+    ngli_glBufferData(gl, GL_ARRAY_BUFFER, vertices_size, s->vertices, GL_STATIC_DRAW);
+    ngli_glBindBuffer(gl, GL_ARRAY_BUFFER, 0);
+}
+
 static void shape_uninit(struct ngl_node *node)
 {
     struct ngl_ctx *ctx = node->ctx;
@@ -98,6 +134,7 @@ const struct node_class ngli_shape_class = {
     .id        = NGL_NODE_SHAPE,
     .name      = "Shape",
     .init      = shape_init,
+    .update    = shape_update,
     .uninit    = shape_uninit,
     .priv_size = sizeof(struct shape),
     .params    = shape_params,
