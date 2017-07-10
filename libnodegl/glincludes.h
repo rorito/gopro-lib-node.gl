@@ -32,6 +32,9 @@
 #  define GL_NUM_EXTENSIONS 0x821D
 #  define GL_RED            GL_LUMINANCE
 #  define GL_R32F           0x822E
+#  define GL_READ_ONLY      0x88B8
+#  define GL_WRITE_ONLY     0x88B9
+#  define GL_READ_WRITE     0x88BA
 # elif TARGET_OS_MAC
 #  include <OpenGL/gl3.h>
 #  include <OpenGL/glext.h>
@@ -47,6 +50,9 @@
 # define GL_NUM_EXTENSIONS 0x821D
 # define GL_RED            GL_LUMINANCE
 # define GL_R32F           0x822E
+# define GL_READ_ONLY      0x88B8
+# define GL_WRITE_ONLY     0x88B9
+# define GL_READ_WRITE     0x88BA
 #endif
 
 #if __linux__ && !__ANDROID__
