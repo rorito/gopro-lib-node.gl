@@ -173,6 +173,11 @@ struct shape {
 
     GLfloat *vertices;
     int nb_vertices;
+
+    int positions_stride;
+    int texcoords_stride;
+    int normals_stride;
+
     GLuint vertices_buffer_id;
     GLuint texcoords_buffer_id;
     GLuint normals_buffer_id;

@@ -77,6 +77,10 @@ static int quad_init(struct ngl_node *node)
     if (!s->vertices)
         return -1;
 
+    s->positions_stride = NGLI_SHAPE_VERTICES_STRIDE(s);
+    s->texcoords_stride = NGLI_SHAPE_VERTICES_STRIDE(s);
+    s->normals_stride = NGLI_SHAPE_VERTICES_STRIDE(s);
+
     float *dst = s->vertices;
     const float *y = vertices;
     const float *uv = uvs;

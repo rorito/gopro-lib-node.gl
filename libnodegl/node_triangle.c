@@ -51,6 +51,10 @@ static int triangle_init(struct ngl_node *node)
     if (!s->vertices)
         return -1;
 
+    s->positions_stride = NGLI_SHAPE_VERTICES_STRIDE(s);
+    s->texcoords_stride = NGLI_SHAPE_VERTICES_STRIDE(s);
+    s->normals_stride = NGLI_SHAPE_VERTICES_STRIDE(s);
+
     float a[3];
     float b[3];
     float normal[3];

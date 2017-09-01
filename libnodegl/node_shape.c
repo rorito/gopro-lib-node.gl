@@ -77,6 +77,10 @@ static int shape_init(struct ngl_node *node)
     if (!s->vertices)
         return -1;
 
+    s->positions_stride = NGLI_SHAPE_VERTICES_STRIDE(s);
+    s->texcoords_stride = NGLI_SHAPE_VERTICES_STRIDE(s);
+    s->normals_stride = NGLI_SHAPE_VERTICES_STRIDE(s);
+
     GLfloat *p = s->vertices;
     for (int i = 0; i < s->nb_vertices; i++) {
         const struct shapeprimitive *primitive = s->primitives[i]->priv_data;

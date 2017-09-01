@@ -146,20 +146,20 @@ static int update_vertex_attribs(struct ngl_node *node)
         if (textureshaderinfo->coordinates_id >= 0) {
             ngli_glEnableVertexAttribArray(gl, textureshaderinfo->coordinates_id);
             ngli_glBindBuffer(gl, GL_ARRAY_BUFFER, shape->texcoords_buffer_id);
-            ngli_glVertexAttribPointer(gl, textureshaderinfo->coordinates_id, 2, GL_FLOAT, GL_FALSE, NGLI_SHAPE_VERTICES_STRIDE(shape), NULL);
+            ngli_glVertexAttribPointer(gl, textureshaderinfo->coordinates_id, 2, GL_FLOAT, GL_FALSE, shape->texcoords_stride, NULL);
         }
     }
 
     if (shader->position_location_id >= 0) {
         ngli_glEnableVertexAttribArray(gl, shader->position_location_id);
         ngli_glBindBuffer(gl, GL_ARRAY_BUFFER, shape->vertices_buffer_id);
-        ngli_glVertexAttribPointer(gl, shader->position_location_id, 3, GL_FLOAT, GL_FALSE, NGLI_SHAPE_VERTICES_STRIDE(shape), NULL);
+        ngli_glVertexAttribPointer(gl, shader->position_location_id, 3, GL_FLOAT, GL_FALSE, shape->positions_stride, NULL);
     }
 
     if (shader->normal_location_id >= 0) {
         ngli_glEnableVertexAttribArray(gl, shader->normal_location_id);
         ngli_glBindBuffer(gl, GL_ARRAY_BUFFER, shape->normals_buffer_id);
-        ngli_glVertexAttribPointer(gl, shader->normal_location_id, 3, GL_FLOAT, GL_FALSE, NGLI_SHAPE_VERTICES_STRIDE(shape), NULL);
+        ngli_glVertexAttribPointer(gl, shader->normal_location_id, 3, GL_FLOAT, GL_FALSE, shape->normals_stride, NULL);
     }
 
     return 0;
