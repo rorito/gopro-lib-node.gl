@@ -132,6 +132,15 @@
         - [draw_mode, int]
         - [draw_type, int]
 
+- Shape2:
+    constructors:
+        - [vertices, Node]
+    optional:
+        - [texcoords, Node]
+        - [normals, Node]
+        - [draw_mode, int]
+        - [draw_type, int]
+
 - Shader:
     optional:
         - [vertex_data, string]
@@ -268,4 +277,32 @@
         - [create_databuf, int]
 
 - Identity:
+
+- BufferFloat:
+    constructors:
+        - [id, string]
+        - [n, int]
+    optional:
+        - [data, data]
+
+- BufferVec2:
+    constructors:
+        - [id, string]
+        - [n, int]
+    optional:
+        - [data, data]
+
+- BufferVec3:
+    constructors:
+        - [id, string]
+        - [n, int]
+    optional:
+        - [data, data]
+
+- BufferVec4:
+    constructors:
+        - [id, string]
+        - [n, int]
+    optional:
+        - [data, data]
 

@@ -46,6 +46,7 @@ extern const struct node_class ngli_quad_class;
 extern const struct node_class ngli_triangle_class;
 extern const struct node_class ngli_shapeprimitive_class;
 extern const struct node_class ngli_shape_class;
+extern const struct node_class ngli_shape2_class;
 extern const struct node_class ngli_shader_class;
 extern const struct node_class ngli_renderrangecontinuous_class;
 extern const struct node_class ngli_renderrangenorender_class;
@@ -66,6 +67,10 @@ extern const struct node_class ngli_uniformint_class;
 extern const struct node_class ngli_uniformmat4_class;
 extern const struct node_class ngli_uniformsampler_class;
 extern const struct node_class ngli_fps_class;
+extern const struct node_class ngli_bufferfloat_class;
+extern const struct node_class ngli_buffervec2_class;
+extern const struct node_class ngli_buffervec3_class;
+extern const struct node_class ngli_buffervec4_class;
 
 static const struct node_class *node_class_map[] = {
     [NGL_NODE_CAMERA]                = &ngli_camera_class,
@@ -82,6 +87,7 @@ static const struct node_class *node_class_map[] = {
     [NGL_NODE_TRIANGLE]              = &ngli_triangle_class,
     [NGL_NODE_SHAPEPRIMITIVE]        = &ngli_shapeprimitive_class,
     [NGL_NODE_SHAPE]                 = &ngli_shape_class,
+    [NGL_NODE_SHAPE2]                = &ngli_shape2_class,
     [NGL_NODE_SHADER]                = &ngli_shader_class,
     [NGL_NODE_RENDERRANGECONTINUOUS] = &ngli_renderrangecontinuous_class,
     [NGL_NODE_RENDERRANGENORENDER]   = &ngli_renderrangenorender_class,
@@ -102,6 +108,10 @@ static const struct node_class *node_class_map[] = {
     [NGL_NODE_UNIFORMMAT4]           = &ngli_uniformmat4_class,
     [NGL_NODE_UNIFORMSAMPLER]        = &ngli_uniformsampler_class,
     [NGL_NODE_FPS]                   = &ngli_fps_class,
+    [NGL_NODE_BUFFERFLOAT]           = &ngli_bufferfloat_class,
+    [NGL_NODE_BUFFERVEC2]            = &ngli_buffervec2_class,
+    [NGL_NODE_BUFFERVEC3]            = &ngli_buffervec3_class,
+    [NGL_NODE_BUFFERVEC4]            = &ngli_buffervec4_class,
 };
 
 static const char *param_type_strings[] = {

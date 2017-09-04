@@ -39,12 +39,16 @@
                                           NGL_NODE_UNIFORMSAMPLER, \
                                           -1}
 
-#define ATTRIBUTES_TYPES_LIST (const int[]){-1}
+#define ATTRIBUTES_TYPES_LIST (const int[]){NGL_NODE_BUFFERFLOAT,   \
+                                            NGL_NODE_BUFFERVEC2,    \
+                                            NGL_NODE_BUFFERVEC3,    \
+                                            NGL_NODE_BUFFERVEC4,    \
+                                            -1}
 
 #define OFFSET(x) offsetof(struct texturedshape, x)
 static const struct node_param texturedshape_params[] = {
     {"shape",    PARAM_TYPE_NODE, OFFSET(shape), .flags=PARAM_FLAG_CONSTRUCTOR,
-                 .node_types=(const int[]){NGL_NODE_QUAD, NGL_NODE_TRIANGLE, NGL_NODE_SHAPE, -1}},
+                 .node_types=(const int[]){NGL_NODE_QUAD, NGL_NODE_TRIANGLE, NGL_NODE_SHAPE, NGL_NODE_SHAPE2, -1}},
     {"shader",   PARAM_TYPE_NODE, OFFSET(shader), .flags=PARAM_FLAG_CONSTRUCTOR,
                  .node_types=(const int[]){NGL_NODE_SHADER, -1}},
     {"textures", PARAM_TYPE_NODELIST, OFFSET(textures),
@@ -162,6 +166,29 @@ static int update_vertex_attribs(struct ngl_node *node)
         ngli_glVertexAttribPointer(gl, shader->normal_location_id, 3, GL_FLOAT, GL_FALSE, shape->normals_stride, NULL);
     }
 
+    for (int i = 0; i < s->nb_attributes; i++) {
+        struct ngl_node *anode = s->attributes[i];
+
+        if (s->attribute_ids[i] < 0)
+            continue;
+
+        switch (anode->class->id) {
+        case NGL_NODE_BUFFERFLOAT:
+        case NGL_NODE_BUFFERVEC2:
+        case NGL_NODE_BUFFERVEC3:
+        case NGL_NODE_BUFFERVEC4: {
+            struct buffer *b = anode->priv_data;
+            ngli_glEnableVertexAttribArray(gl, s->attribute_ids[i]);
+            ngli_glBindBuffer(gl, GL_ARRAY_BUFFER, b->buffer_id);
+            ngli_glVertexAttribPointer(gl, s->attribute_ids[i], b->data_comp, GL_FLOAT, GL_FALSE, b->data_stride, NULL);
+            break;
+        }
+        default:
+            ngli_assert(0);
+            break;
+        }
+    }
+
     return 0;
 }
 
@@ -201,13 +228,26 @@ static int texturedshape_init(struct ngl_node *node)
     if (!s->attribute_ids)
         return -1;
 
+
     for (int i = 0; i < s->nb_attributes; i++) {
         struct ngl_node *unode = s->attributes[i];
-        struct attribute *u = unode->priv_data;
+
         ret = ngli_node_init(unode);
         if (ret < 0)
             return ret;
-        s->attribute_ids[i] = ngli_glGetAttribLocation(gl, shader->program_id, u->name);
+
+        switch (unode->class->id) {
+        case NGL_NODE_BUFFERFLOAT:
+        case NGL_NODE_BUFFERVEC2:
+        case NGL_NODE_BUFFERVEC3:
+        case NGL_NODE_BUFFERVEC4: {
+            struct buffer *b = unode->priv_data;
+            s->attribute_ids[i] = ngli_glGetAttribLocation(gl, shader->program_id, b->name);
+            break;
+        }
+        default:
+            ngli_assert(0);
+        }
     }
 
     if (s->nb_textures > glcontext->max_texture_image_units) {

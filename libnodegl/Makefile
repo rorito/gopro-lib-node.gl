@@ -60,6 +60,7 @@ LIB_OBJS = api.o                    \
            log.o                    \
            math_utils.o             \
            node_animkeyframe.o      \
+           node_buffer.o            \
            node_camera.o            \
            node_fps.o               \
            node_glblendstate.o      \
@@ -76,6 +77,7 @@ LIB_OBJS = api.o                    \
            node_scale.o             \
            node_shader.o            \
            node_shape.o             \
+           node_shape2.o            \
            node_shapeprimitive.o    \
            node_texture.o           \
            node_texturedshape.o     \

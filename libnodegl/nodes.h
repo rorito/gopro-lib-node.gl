@@ -171,6 +171,11 @@ struct shape {
     struct ngl_node **primitives;
     int nb_primitives;
 
+    /* shape2 params */
+    struct ngl_node *vertices_buffer;
+    struct ngl_node *texcoords_buffer;
+    struct ngl_node *normals_buffer;
+
     GLfloat *vertices;
     int nb_vertices;
 
@@ -193,6 +198,17 @@ struct shape {
 };
 
 void ngli_shape_generate_buffers(struct ngl_node *node);
+
+struct buffer {
+    const char *name;
+    int n;
+    uint8_t *data;
+    int data_size;
+    int data_comp;
+    int data_stride;
+
+    GLuint buffer_id;
+};
 
 struct uniform {
     const char *name;
