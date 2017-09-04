@@ -60,7 +60,6 @@ LIB_OBJS = api.o                    \
            log.o                    \
            math_utils.o             \
            node_animkeyframe.o      \
-           node_attribute.o         \
            node_camera.o            \
            node_fps.o               \
            node_glblendstate.o      \
