@@ -231,6 +231,16 @@ cdef class _Node:
         return ngl_node_param_set(self.ctx, "%(field_name)s", %(cparam)s)
 ''' % field_data
 
+                elif field_type == 'data':
+                    field_data = {
+                        'field_name': field_name,
+                        'field_type': 'const char *',
+                    }
+                    class_str += '''
+    def set_%(field_name)s(self, %(field_name)s):
+        return ngl_node_param_set(self.ctx, "%(field_name)s", <int>len(%(field_name)s), <const char *>%(field_name)s)
+''' % field_data
+
                 else:
                     ctype = field_type
                     cparam = field_name

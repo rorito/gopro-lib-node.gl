@@ -115,6 +115,7 @@ static const char *param_type_strings[] = {
     [PARAM_TYPE_NODE]     = "Node",
     [PARAM_TYPE_NODELIST] = "NodeList",
     [PARAM_TYPE_DBLLIST]  = "doubleList",
+    [PARAM_TYPE_DATA]     = "data",
 };
 
 #define OFFSET(x) offsetof(struct ngl_node, x)
@@ -298,6 +299,7 @@ static const size_t opt_sizes[] = {
     [PARAM_TYPE_NODE]     = sizeof(struct ngl_node *),
     [PARAM_TYPE_NODELIST] = sizeof(struct ngl_node **) + sizeof(int),
     [PARAM_TYPE_DBLLIST]  = sizeof(double *)           + sizeof(int),
+    [PARAM_TYPE_DATA]     = sizeof(void *)             + sizeof(int),
 };
 
 /*
