@@ -80,6 +80,7 @@ static int triangle_init(struct ngl_node *node)
         dst += NGLI_SHAPE_NORMALS_NB;
     }
 
+    s->indice_size = sizeof(GLushort);
     static const GLushort indices[] = { 0, 1, 2 };
     s->nb_indices = NGLI_ARRAY_NB(indices);
     s->indices = calloc(1, sizeof(indices));
