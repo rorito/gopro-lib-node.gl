@@ -278,6 +278,21 @@
 
 - Identity:
 
+- Compute:
+    constructors:
+        - [nb_group_x, int]
+        - [nb_group_y, int]
+        - [nb_group_z, int]
+        - [shader, Node]
+    optional:
+        - [textures, NodeList]
+        - [uniforms, NodeList]
+        - [buffers, NodeList]
+
+- ComputeShader:
+    constructors:
+        - [compute_data, string]
+
 - BufferFloat:
     constructors:
         - [id, string]

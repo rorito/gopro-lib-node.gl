@@ -35,6 +35,12 @@
 #  define GL_READ_ONLY      0x88B8
 #  define GL_WRITE_ONLY     0x88B9
 #  define GL_READ_WRITE     0x88BA
+#  define GL_COMPUTE_SHADER                     0x91B9
+#  define GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS 0x90EB
+#  define GL_MAX_COMPUTE_WORK_GROUP_COUNT       0x91BE
+#  define GL_MAX_COMPUTE_WORK_GROUP_SIZE        0x91BF
+#  define GL_COMPUTE_WORK_GROUP_SIZE            0x8267
+#  define GL_SHADER_IMAGE_ACCESS_BARRIER_BIT    0x00000020
 # elif TARGET_OS_MAC
 #  include <OpenGL/gl3.h>
 #  include <OpenGL/glext.h>
@@ -53,6 +59,12 @@
 # define GL_READ_ONLY      0x88B8
 # define GL_WRITE_ONLY     0x88B9
 # define GL_READ_WRITE     0x88BA
+# define GL_COMPUTE_SHADER                     0x91B9
+# define GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS 0x90EB
+# define GL_MAX_COMPUTE_WORK_GROUP_COUNT       0x91BE
+# define GL_MAX_COMPUTE_WORK_GROUP_SIZE        0x91BF
+# define GL_COMPUTE_WORK_GROUP_SIZE            0x8267
+# define GL_SHADER_IMAGE_ACCESS_BARRIER_BIT    0x00000020
 #endif
 
 #if __linux__ && !__ANDROID__

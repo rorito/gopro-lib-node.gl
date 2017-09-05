@@ -249,6 +249,12 @@ struct shader {
     GLint normal_matrix_location_id;
 };
 
+struct computeshader {
+    const char *compute_data;
+
+    GLuint program_id;
+};
+
 struct texture {
     GLenum target;
     GLint format;
@@ -307,6 +313,30 @@ struct texturedshape {
     GLint *attribute_ids;
 
     GLuint vao_id;
+};
+
+struct compute {
+    int nb_group_x;
+    int nb_group_y;
+    int nb_group_z;
+
+    struct ngl_node *shader;
+
+    struct ngl_node **textures;
+    int nb_textures;
+    struct textureshaderinfo *textureshaderinfos;
+
+    struct ngl_node **uniforms;
+    int nb_uniforms;
+    GLint *uniform_ids;
+
+    struct ngl_node **attributes;
+    int nb_attributes;
+    GLint *attribute_ids;
+
+    struct ngl_node **buffers;
+    int nb_buffers;
+    GLint *buffer_ids;
 };
 
 struct media {

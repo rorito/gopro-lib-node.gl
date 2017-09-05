@@ -67,6 +67,8 @@ extern const struct node_class ngli_uniformint_class;
 extern const struct node_class ngli_uniformmat4_class;
 extern const struct node_class ngli_uniformsampler_class;
 extern const struct node_class ngli_fps_class;
+extern const struct node_class ngli_compute_class;
+extern const struct node_class ngli_computeshader_class;
 extern const struct node_class ngli_bufferfloat_class;
 extern const struct node_class ngli_buffervec2_class;
 extern const struct node_class ngli_buffervec3_class;
@@ -108,6 +110,8 @@ static const struct node_class *node_class_map[] = {
     [NGL_NODE_UNIFORMMAT4]           = &ngli_uniformmat4_class,
     [NGL_NODE_UNIFORMSAMPLER]        = &ngli_uniformsampler_class,
     [NGL_NODE_FPS]                   = &ngli_fps_class,
+    [NGL_NODE_COMPUTE]               = &ngli_compute_class,
+    [NGL_NODE_COMPUTESHADER]         = &ngli_computeshader_class,
     [NGL_NODE_BUFFERFLOAT]           = &ngli_bufferfloat_class,
     [NGL_NODE_BUFFERVEC2]            = &ngli_buffervec2_class,
     [NGL_NODE_BUFFERVEC3]            = &ngli_buffervec3_class,

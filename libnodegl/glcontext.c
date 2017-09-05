@@ -192,6 +192,13 @@ int ngli_glcontext_load_extensions(struct glcontext *glcontext)
         if (glcontext->major_version >= 4)
             glcontext->has_vao_compatibility = 1;
 
+        if (gl->DispatchCompute)
+            glcontext->has_cs_compatibility = 1;
+
+        ngli_glGetIntegeri_v(gl, GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &glcontext->max_compute_work_group_counts[0]);
+        ngli_glGetIntegeri_v(gl, GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &glcontext->max_compute_work_group_counts[1]);
+        ngli_glGetIntegeri_v(gl, GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &glcontext->max_compute_work_group_counts[2]);
+
         ngli_glGetIntegerv(gl, GL_NUM_EXTENSIONS, &nb_extensions);
         for (i = 0; i < nb_extensions; i++) {
             const char *extension = (const char *)ngli_glGetStringi(gl, GL_EXTENSIONS, i);
@@ -223,11 +230,16 @@ int ngli_glcontext_load_extensions(struct glcontext *glcontext)
 
     }
 
-    LOG(INFO, "OpenGL %d.%d ES2_compatibility=%d vertex_array_object=%d",
+    LOG(INFO, "OpenGL %d.%d ES2_compatibility=%d vertex_array_object=%d, has_cs_compatibility=%d (x:%d, y:%d, z:%d)",
         glcontext->major_version,
         glcontext->minor_version,
         glcontext->has_es2_compatibility,
-        glcontext->has_vao_compatibility);
+        glcontext->has_vao_compatibility,
+        glcontext->has_cs_compatibility,
+        glcontext->max_compute_work_group_counts[0],
+        glcontext->max_compute_work_group_counts[1],
+        glcontext->max_compute_work_group_counts[2]
+        );
 
     glcontext->loaded = 1;
 
