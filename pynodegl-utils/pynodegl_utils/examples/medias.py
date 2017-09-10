@@ -1,6 +1,6 @@
 import math
 
-from pynodegl import TexturedShape, Quad, Triangle, Shape, ShapePrimitive, Texture, Media, Shader, AnimKeyFrameScalar, Group, GLStencilState, GLState, Scale, AnimKeyFrameScalar, AnimKeyFrameVec3, Rotate, GLColorState, UniformScalar
+from pynodegl import TexturedShape, Quad, Triangle, Shape, ShapePrimitive, Texture, Media, Shader, AnimKeyFrameScalar, Group, GLStencilState, GLState, Scale, AnimKeyFrameScalar, AnimKeyFrameVec3, Rotate, GLColorState, UniformScalar, AttributeVec3
 
 from pynodegl_utils.misc import scene
 
