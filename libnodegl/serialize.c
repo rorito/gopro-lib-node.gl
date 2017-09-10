@@ -174,8 +174,7 @@ static void serialize_options(struct serial_ctx *sctx,
                 break;
             }
             case PARAM_TYPE_NODEDICT: {
-                struct ndict **ndictp = (struct ndict **)(priv + p->offset);
-                struct ndict *ndict = *ndictp;
+                struct ndict *ndict = *(struct ndict **)(priv + p->offset);
                 struct ndict_entry *entry = NULL;
                 const int nb_nodes = ngli_ndict_count(ndict);
                 if (!nb_nodes)
@@ -226,8 +225,7 @@ static void serialize_children(struct serial_ctx *sctx,
                 break;
             }
             case PARAM_TYPE_NODEDICT: {
-                struct ndict **ndictp = (struct ndict **)(priv + p->offset);
-                struct ndict *ndict = *ndictp;
+                struct ndict *ndict = *(struct ndict **)(priv + p->offset);
                 struct ndict_entry *entry = NULL;
                 while ((entry = ngli_ndict_get(ndict, NULL, entry)))
                     serialize(sctx, b, entry->node);
